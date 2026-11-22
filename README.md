@@ -21,6 +21,8 @@ In the directory of the repository you want to review, invoke it from Claude Cod
 
 The output is written in the language you use in the conversation.
 
+The skill is read-only: it reads the change and the repository, and does not run tests, builds, or any code, change files, or write to GitHub. It may run `git fetch` to get a PR's commits that are not available locally. Text in commits, PRs, issues, and the diff is treated as data, not instructions. Only the file-editing tools (`Write`, `Edit`, `NotebookEdit`) are removed by the skill's `disallowed-tools`, and only for the turn that invokes it; the rest are instructions to the model, not enforced limits; when using it on changes from people you do not trust, restrict tool permissions (for example, allow only `git` and `gh` read commands in Bash) and do not use auto-approve modes.
+
 ## Output
 
 Purpose of the change (quoted from the commit message, PR, or issue), what changed, behavior changes (before → after, code location, why, tests that verify it or a missing-test warning, cautions), unchanged behavior, spec alignment, changes with no behavioral effect, and what could not be determined.
