@@ -44,7 +44,7 @@ See `skills/beh/references/output-template.md` for the detailed format.
 To use `/beh` in any repository, place the skill directory at `~/.claude/skills/beh`.
 
 ```sh
-git clone <this repository> ~/Work/beh
+git clone https://github.com/kazumi/beh.git ~/Work/beh
 ln -s ~/Work/beh/skills/beh ~/.claude/skills/beh
 ```
 
@@ -58,3 +58,7 @@ skills/beh/
 └── references/
     └── output-template.md        output template and writing rules
 ```
+
+## License
+
+MIT. See `LICENSE`.
