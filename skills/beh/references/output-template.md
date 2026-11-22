@@ -19,7 +19,8 @@ Alternatives not taken: {alternative and why it was not taken (source)}
 - Before → After: `{result before}` → `{result after}`
 - Code location: `{file}:{line}` `{method name}` (connect the path with → if there is one; for documents aimed at agents, show with ← which entry point leads to them)
 - Why: {mechanism. For parts that rely on a description, give the source}
-- Tests that verify it: `{file}:{line}` ({what it verifies})
+- Tests that verify it: `{file}:{line}` ({what it verifies}) ({added in this change / changed in this change / existing})
+- ⚠ Missing test: {the behavior after the change (condition and result) that no test verifies} (looked in: `{paths or patterns}`)
 - Caution: {a place where the meaning or scope of the change is easy to misread. What differs from what, and how. Both locations `{file}:{line}`}
 
 ### Unchanged behavior
@@ -67,7 +68,13 @@ For commits by an automated dependency update bot, or merge commits that merged 
 - **Write behavior changes as externally visible results.** Do not turn them into code descriptions. Follow them not only to the changed place but to where the result appears (another screen, an aggregate, another field of the API, etc.)
 - **Write changes to documents aimed at the Agent (AI) as behavior changes too.** Do not treat them as "docs-only changes, so behavior does not change"
 - **Write code locations as file, line, and method name inside the reviewed repository.** Do not point inside libraries or frameworks; just name them (e.g. Rails' built-in ActiveStorage)
-- **Tests that verify it**: write only when a relevant test exists. Do not evaluate whether the tests are sufficient
+- **Tests that verify it / Missing test**: every App and Dev environment behavior change has one of the two. This skill assumes that a behavior change needs a test that verifies the behavior after the change
+  - Write "Tests that verify it" only for tests that exercise the changed condition and check the result after the change, and say whether each was added in this change, changed in this change, or already existed
+  - When no such test is found, write "⚠ Missing test" with the behavior that is not verified and where you looked. If some conditions of the item are tested and others are not, write both lines and name the untested conditions
+  - When a test still checks the result before the change, write it under "Missing test" with its location
+  - When the repository has no tests at all, write the warning once directly under the "Behavior changes" heading instead of on each item
+  - Do not write tests for them or suggest test code
+  - Agent (AI) behavior changes are out of scope; write neither line for them
 - **Caution**: write only when someone reading the change (the reviewer, or a person or AI who later reads that code or document to work on it) might misread the meaning or scope of the change. Limit it to the following cases, where you can show grounds
   - A description or code that contradicts what was changed remains elsewhere in the repository. Example: the "Approach" section of a design doc was changed to "timeout is 30 seconds", but the "Tests" section of the same doc still says "timeout is 10 seconds"
   - Similar situations are handled differently in different places. Example: the same date is shown as "2026-01-05" in the list but "Jan 5" in the detail view
@@ -78,5 +85,5 @@ For commits by an automated dependency update bot, or merge commits that merged 
 - **Unchanged behavior**: write only behavior that, judging from the purpose or content of the change, people would likely assume is affected
 - **Spec alignment**: check whether the repository's spec documents have a corresponding description, and write it. If no spec document is found, write one line: "No spec document found". If the only changes are to the Agent (AI), write "Corresponding spec: not described (rules for agents are out of the spec's scope)"
 - **Could not determine**: write only things that have a concrete path to an externally visible result and cannot be verified (depends on settings outside the repository, a library version change, etc.). Do not write abstract possibilities without grounds
-- **Omitting**: omit empty sections and lines instead of writing "None" (Alternatives not taken, Tests that verify it, Caution, Unchanged behavior, Changes with no behavioral effect, Could not determine). **Never omit "Behavior changes".** Check all of App, Dev environment, and Agent (AI); only when you conclude none of them changes, write the reason in one line
-- **Do not write**: evaluative words (good/bad, insufficient, "can only…", etc.), test sufficiency, or judgments of whether it matches the intent. The reviewer makes the judgments
+- **Omitting**: omit empty sections and lines instead of writing "None" (Alternatives not taken, Tests that verify it under "Unchanged behavior", Caution, Unchanged behavior, Changes with no behavioral effect, Could not determine). **Never omit "Behavior changes".** Check all of App, Dev environment, and Agent (AI); only when you conclude none of them changes, write the reason in one line
+- **Do not write**: evaluative words (good/bad, insufficient, "can only…", etc.) or judgments of whether it matches the intent. The reviewer makes the judgments. The "Missing test" warning is the only exception

@@ -23,7 +23,7 @@ The output is written in the language you use in the conversation.
 
 ## Output
 
-Purpose of the change (quoted from the commit message, PR, or issue), what changed, behavior changes (before → after, code location, why, tests that verify it, cautions), unchanged behavior, spec alignment, changes with no behavioral effect, and what could not be determined.
+Purpose of the change (quoted from the commit message, PR, or issue), what changed, behavior changes (before → after, code location, why, tests that verify it or a missing-test warning, cautions), unchanged behavior, spec alignment, changes with no behavioral effect, and what could not be determined.
 
 Behavior changes are written for three targets:
 

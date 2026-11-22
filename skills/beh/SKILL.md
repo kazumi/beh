@@ -8,7 +8,8 @@ argument-hint: <PR number | issue number | commit hash>
 
 Write out the correspondence (mapping) between code changes and behavior changes — correctly, without omissions, and in a form that keeps the reviewer's burden low.
 
-- The output is for a human reviewer to understand the change. **You are not the reviewer.** Do not judge whether the change is good or bad, whether it has bugs, whether the tests are sufficient, or whether it matches the intent
+- The output is for a human reviewer to understand the change. **You are not the reviewer.** Do not judge whether the change is good or bad, whether it has bugs, or whether it matches the intent
+- The exception is tests. This skill assumes that **when behavior changes, a test that verifies the behavior after the change is needed**. When no such test is found, output a warning (S8)
 - Include not only direct effects but also effects that surface through the complexity of the code and are easy for people to miss. However, do not write about anything whose externally visible result does not change (things with no essential effect)
 - Follow the output format in `references/output-template.md`. Read it first
 
@@ -83,9 +84,18 @@ Keep only externally visible results that change under conditions that can actua
 Group conditions that change in the same way at the same place into one item. One change may produce several effects, and several changes may produce one effect. The length of the output is determined by the complexity of the behavior changes, not by the number of facts found.
 
 ### S7 Check against the spec
-Look for spec documents in the repository (e.g. documents in `docs/spec/`, `docs/specs/`, `spec/`, `SPEC.md`, `docs/requirements*`). For the behavior changes (and app behavior the change records or verifies), write whether there is a corresponding description, whether it matches the behavior after the change, whether the spec needs updating, and whether it was updated in this change.
+Look for spec documents in the repository (e.g. documents in `docs/spec/`, `docs/specs/`, `SPEC.md`, `docs/requirements*`). For the behavior changes (and app behavior the change records or verifies), write whether there is a corresponding description, whether it matches the behavior after the change, whether the spec needs updating, and whether it was updated in this change.
 
-### S8 Note places that are easy to misread
+### S8 Check tests for each behavior change
+For each behavior change targeting App or Dev environment, look for tests that verify the behavior after the change.
+- Find where tests live from the repository's conventions and test framework settings, not from a fixed list. Examples: `spec/` and `*_spec.rb` (RSpec), `test/` and `*_test.rb` (minitest), `*.test.ts` / `*.spec.ts` / `__tests__/` (Jest, Vitest), `tests/` and `test_*.py` (pytest), `*_test.go` (Go), `src/test/` (JUnit). Also check the framework config files (`.rspec`, `jest.config.*`, `pytest.ini`, `pyproject.toml`, etc.)
+- Look at both tests added or changed in this change and existing tests. A test counts only when it exercises the changed condition and checks the result after the change. A test that only runs the code path without checking the changed result does not count
+- If a test still checks the result before the change, write that too (it will fail or is not being run)
+- If no test is found, add a "Missing test" warning to that behavior change item: which behavior (condition and result after the change) has no test, and where you looked. Do not write the test itself
+- If the repository has no tests at all, write the warning once under "Behavior changes" instead of on every item
+- Agent (AI) changes are out of scope for this step
+
+### S9 Note places that are easy to misread
 Look for places where someone reading the change might misread its meaning or scope: a description or code elsewhere that contradicts what was changed remains; similar situations are handled differently in different places; two conditions must hold at the same time. If found, add a "Caution" to that behavior change item, stating what differs from what and how, with both locations. Do not say which one is correct (see `references/output-template.md` for how to write it).
 
 ## Check before output
@@ -93,7 +103,8 @@ Look for places where someone reading the change might misread its meaning or sc
 - [ ] Did you quote the purpose of the change with its source? (If none, "No stated purpose")
 - [ ] Did you write behavior changes as externally visible results rather than code descriptions? Did you check all of App, Dev environment, and Agent (AI)?
 - [ ] Does each item have `file:line` and a method name in the reviewed repository? Did you verify the line numbers against the post-change commit?
-- [ ] Did you avoid evaluative words (good/bad, insufficient, "can only…", no problem)?
+- [ ] Does every App / Dev environment behavior change have either "Tests that verify it" or a "Missing test" warning?
+- [ ] Did you avoid evaluative words (good/bad, insufficient, "can only…", no problem)? (The "Missing test" warning is the only exception)
 - [ ] Did you avoid tables?
 - [ ] Did you avoid listing "None" under empty sections? (Omit them, except "Behavior changes")
 - [ ] Did you keep possibilities without grounds out of "Could not determine"?
