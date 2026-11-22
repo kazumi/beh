@@ -1,58 +1,60 @@
 # beh — Behavioral Diff for code review
 
-コミット・PR・Issue について、コードの変更が「どの振る舞いを、どの条件で、どう変えるか」を、コードの場所と理由つきで書き出す Claude Code のスキル。
+A Claude Code skill that, for a commit, PR, or issue, writes out which behavior a code change alters, under which conditions, and how — with code locations and reasons.
 
-人間のレビュワーが変更を理解するための出力を作る。バグの指摘や、変更の良し悪しの判定はしない。
+It produces output that helps a human reviewer understand the change. It does not point out bugs or judge whether the change is good.
 
-## 使い方
+## Usage
 
-レビューしたいリポジトリのディレクトリで、Claude Code から次のように起動する。
+In the directory of the repository you want to review, invoke it from Claude Code:
 
 ```
-/beh #123        # PR または Issue の番号（# は省いてよい）
-/beh a1b2c3d     # コミットハッシュ
-/beh v1.2..v1.3  # コミットの範囲
-/beh             # HEAD のコミット
+/beh #123        # PR or issue number (the # is optional)
+/beh a1b2c3d     # commit hash
+/beh v1.2..v1.3  # commit range
+/beh             # the HEAD commit
 ```
 
-- PR は、base との分岐点から head までの差を見る
-- Issue は、その Issue を閉じた PR・本文で参照する PR・コミットメッセージで参照するコミットを集め、PR またはコミットごとに出力する
-- 依存の自動更新（Dependabot・Renovate など）は、更新したパッケージと版だけを出す
+- For a PR, it looks at the difference from the fork point with base to head
+- For an issue, it collects the PRs that closed it, PRs whose body references it, and commits whose message references it, and outputs per PR or commit
+- For automated dependency updates (Dependabot, Renovate, etc.), it outputs only the updated packages and versions
 
-## 出力
+The output is written in the language you use in the conversation.
 
-変更の目的（コミットメッセージ・PR・Issue からの引用）、変更の内容、振る舞いの変化（変更前 → 変更後、コードの場所、なぜそうなるか、確かめているテスト、注意）、変わらない振る舞い、仕様との対応、動作に影響しない変更、判断できなかったこと。
+## Output
 
-振る舞いの変化は、次の 3 つの対象で書く。
+Purpose of the change (quoted from the commit message, PR, or issue), what changed, behavior changes (before → after, code location, why, tests that verify it, cautions), unchanged behavior, spec alignment, changes with no behavioral effect, and what could not be determined.
 
-- アプリ：画面の表示と操作、HTTP の応答、保存されるデータ、外部への送信
-- 開発環境：テストの実行、ビルドの道具、リンタ・型の検査
-- 作業者（AI）：`CLAUDE.md`・`AGENTS.md`・`.claude/` などの変更で変わる、AI のコーディングエージェントの振る舞い
+Behavior changes are written for three targets:
 
-形式の詳細は `skills/beh/references/output-template.md`。
+- App: screen display and interaction, HTTP responses, stored data, outbound requests to external systems
+- Dev environment: test runs, build tools, linters and type checks
+- Agent (AI): the behavior of AI coding agents, changed by changes to `CLAUDE.md`, `AGENTS.md`, `.claude/`, etc.
 
-## 必要なもの
+See `skills/beh/references/output-template.md` for the detailed format.
+
+## Requirements
 
 - Claude Code
 - git
-- GitHub の PR・Issue の番号で指定するときは `gh`（GitHub CLI）。ログイン済みであること
+- `gh` (GitHub CLI), logged in, when specifying GitHub PR or issue numbers
 
-## 入れ方
+## Installation
 
-どのリポジトリでも `/beh` で使うには、スキルのディレクトリを `~/.claude/skills/beh` に置く。
+To use `/beh` in any repository, place the skill directory at `~/.claude/skills/beh`.
 
 ```sh
-git clone <このリポジトリ> ~/Work/beh
+git clone <this repository> ~/Work/beh
 ln -s ~/Work/beh/skills/beh ~/.claude/skills/beh
 ```
 
-1 つのリポジトリだけで使うなら、そのリポジトリの `.claude/skills/beh` に置く。
+To use it in a single repository only, place it at `.claude/skills/beh` in that repository.
 
-## 構成
+## Structure
 
 ```
 skills/beh/
-├── SKILL.md                      手順（引数の解釈、比べる範囲、影響のたどり方、出す前の点検）
+├── SKILL.md                      procedure (argument parsing, what to compare, tracing effects, pre-output checks)
 └── references/
-    └── output-template.md        出力のテンプレートと書き方の決まり
+    └── output-template.md        output template and writing rules
 ```

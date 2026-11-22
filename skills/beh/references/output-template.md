@@ -1,82 +1,82 @@
-# Behavioral Diff 出力テンプレート
+# Behavioral Diff output template
 
-## テンプレート
+## Template
 
 ```markdown
-### 変更の目的（{出典の種類}より）
-> {コミットメッセージ・PR 本文・Issue から、なぜこの変更をしたかを抜き出して引用}
+### Purpose of the change (from {kind of source})
+> {Quote from the commit message, PR body, or issue explaining why this change was made}
 >
-> — {出典：コミット `{ハッシュ}` のメッセージ／PR #{番号} 本文／Issue #{番号}}
+> — {Source: message of commit `{hash}` / body of PR #{number} / issue #{number}}
 
-採らなかった案：{案と、採らなかった理由（出典）}
+Alternatives not taken: {alternative and why it was not taken (source)}
 
-### 変更の内容
-{何をどう変えたかを 1〜2 文で。項目が多ければ列挙}
+### What changed
+{What was changed and how, in 1–2 sentences. List them if there are many}
 
-### 振る舞いの変化
+### Behavior changes
 
-**{番号}. 【{対象：アプリ／開発環境／作業者（AI）}】{どこで、どの条件で、何がどう変わるか}**
-- 変更前 → 変更後：`{変更前の結果}` → `{変更後の結果}`
-- コードの場所：`{ファイル}:{行}` `{メソッド名}`（経路があれば → でつなぐ。作業者向けの文書なら、どの案内から読まれるかを ← で示す）
-- なぜそうなるか：{仕組み。記載に頼る部分は出典を書く}
-- 確かめているテスト：`{ファイル}:{行}`（{何を確かめているか}）
-- 注意：{変更の意味や範囲を読み違えやすい箇所。何と何が、どう違うか。両方の場所 `{ファイル}:{行}`}
+**{number}. [{Target: App / Dev environment / Agent (AI)}] {Where, under which conditions, what changes and how}**
+- Before → After: `{result before}` → `{result after}`
+- Code location: `{file}:{line}` `{method name}` (connect the path with → if there is one; for documents aimed at agents, show with ← which entry point leads to them)
+- Why: {mechanism. For parts that rely on a description, give the source}
+- Tests that verify it: `{file}:{line}` ({what it verifies})
+- Caution: {a place where the meaning or scope of the change is easy to misread. What differs from what, and how. Both locations `{file}:{line}`}
 
-### 変わらない振る舞い
+### Unchanged behavior
 
-**{変わらない振る舞い}**
-- コードの場所：`{ファイル}:{行}` `{メソッド名}`
-- なぜ変わらないか：{仕組み}
-- 確かめているテスト：`{ファイル}:{行}`（{何を確かめているか}）
+**{behavior that does not change}**
+- Code location: `{file}:{line}` `{method name}`
+- Why it does not change: {mechanism}
+- Tests that verify it: `{file}:{line}` ({what it verifies})
 
-### 仕様との対応
+### Spec alignment
 
-**{対象の振る舞い（振る舞いの変化の番号、または関わるアプリの振る舞い）}**
-- 対応する仕様：`{仕様の文書}:{行}`（{記載の要約}）
-- 変更後の振る舞いとの関係：{一致／食い違う：どこがどう違うか／仕様に記載なし}
-- 仕様の更新：{必要／不要}（{理由}）
-- この変更での更新：{済み：`{ファイル}:{行}`／されていない}
+**{the behavior in question (number of a behavior change, or related app behavior)}**
+- Corresponding spec: `{spec document}:{line}` ({summary of the description})
+- Relation to the behavior after the change: {matches / differs: where and how / not described in the spec}
+- Spec update: {needed / not needed} ({reason})
+- Updated in this change: {yes: `{file}:{line}` / no}
 
-### 動作に影響しない変更
-- `{ファイル}`（{文書／テスト など。理由}）
+### Changes with no behavioral effect
+- `{file}` ({docs / tests, etc. Reason})
 
-### 判断できなかったこと
-- **{何が判断できなかったか}**：{根拠。外から見える結果に届く具体的な経路があって、確かめられない理由}
+### Could not determine
+- **{what could not be determined}**: {grounds. The concrete path to an externally visible result, and why it cannot be verified}
 ```
 
-## 依存の自動更新（Dependabot・Renovate など）
+## Automated dependency updates (Dependabot, Renovate, etc.)
 
-依存の自動更新のボットによるコミット、またはその PR を取り込んだマージコミットは、上のテンプレートを使わず、次だけを出力する。影響はたどらない。
+For commits by an automated dependency update bot, or merge commits that merged such a PR, do not use the template above; output only the following. Do not trace effects.
 
 ```markdown
-### 依存の自動更新（{ボットの名前}）
-- {パッケージ名}：`{変更前の版}` → `{変更後の版}`（`{ファイル}`）
-- PR #{番号}
+### Automated dependency update ({bot name})
+- {package name}: `{version before}` → `{version after}` (`{file}`)
+- PR #{number}
 ```
 
-## 対象（振る舞いの変化の【】に書くもの）
+## Targets (what goes in the [ ] of a behavior change)
 
-- **アプリ**：画面の表示と操作、HTTP の応答、保存されるデータ、外部への送信
-- **開発環境**：テストの実行、ビルドの道具、リンタ・型の検査が何をし、何を確かめるか
-- **作業者（AI）**：AI のコーディングエージェントが、何をどう実行するか、どこで止まるか、何を確かめるか。エージェント向けの指示の文書（`CLAUDE.md`、`AGENTS.md`、`GEMINI.md`、`.claude/` の rules・skills・agents・hooks・settings、`.cursor/rules` など）と、そこから案内される文書の変更で変わる
+- **App**: screen display and interaction, HTTP responses, stored data, outbound requests to external systems
+- **Dev environment**: what test runs, build tools, and linters and type checks do and verify
+- **Agent (AI)**: what an AI coding agent runs and how, where it stops, what it verifies. Changed by changes to documents that instruct agents (`CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, rules, skills, agents, hooks, and settings in `.claude/`, `.cursor/rules`, etc.) and documents they point to
 
-## 書き方の決まり
+## Writing rules
 
-- **表は使わず、列挙で書く**。端末によって表示が難しく、読みにくいことがある
-- **変更の目的は、必ず出典付きで引用する**。目的が無いと、振る舞いの変化だけでは意図が読めない。出典が見つからなければ「目的の記載なし」と書く
-- **振る舞いの変化は、外から見える結果で書く**。コードの説明にしない。変更した箇所だけでなく、その結果が現れる場所（別の画面、集計、API の別の項目など）までたどって書く
-- **作業者（AI）向けの文書の変更も、振る舞いの変化として書く**。「文書だけの変更だから振る舞いは変わらない」とはしない
-- **コードの場所は、レビュー対象のリポジトリの中のファイル・行・メソッド名で書く**。ライブラリ・フレームワークの中は書かず、名前だけ示す（例：Rails 標準の ActiveStorage）
-- **確かめているテスト**は、該当するテストがあるときだけ書く。テストの十分さは評価しない
-- **注意**は、変更を読んだ人（レビュワーや、あとでそのコード・文書を読んで作業する人や AI）が、変更の意味や範囲を読み違えるおそれがあるときだけ書く。根拠を示せる次の場合に限る
-  - 変更した箇所と食い違う記載やコードが、リポジトリの別の場所に残っている。例：設計文書の「方針」の節は「タイムアウトは 30 秒」に変えたが、同じ文書の「テスト」の節は「タイムアウトは 10 秒」のまま
-  - 似た状況なのに、場所によって扱いが違う。例：同じ日付の表示が、一覧では「2026-01-05」、詳細では「1月5日」
-  - 2 つの条件を同時に満たす必要があり、片方だけを見ると読み違える。例：「失敗したら最大 3 回まで再試行する」と「再試行の待ち時間は合計 10 秒まで」が、同じ文書にある
-  - 書き方：何と何が、どう違うかを、両方の場所を示して書く。どちらが正しいか、直すべきかは書かない（判断はレビュワーが行う）
-  - 見る範囲は、このコミット・PR の変更と、その時点のリポジトリだけ。後のコミットで直ったか、実際に読み違えが起きたかは書かない
-  - 該当しなければ、この行は書かない
-- **変わらない振る舞い**は、変更の目的や内容から、影響が及ぶと思われやすいものに限って書く
-- **仕様との対応**は、リポジトリの仕様の文書に対応する記載があるかを調べて書く。仕様の文書が見つからなければ「仕様の文書が見つからない」と 1 行書く。作業者（AI）の変化だけなら「対応する仕様：記載なし（作業者向けの決まりは仕様の対象外）」とする
-- **判断できなかったこと**には、外から見える結果に届く具体的な経路があって、確かめられないものだけを書く（リポジトリの外の設定に依存する、ライブラリの版の変更など）。根拠のない抽象的な可能性は書かない
-- **省き方**：中身の無い節・行は「なし」と書かずに省く（採らなかった案、確かめているテスト、注意、変わらない振る舞い、動作に影響しない変更、判断できなかったこと）。**「振る舞いの変化」は省かない**。アプリ・開発環境・作業者（AI）のすべてを確かめて書き、どれにも変化が無いと判断したときだけ、その理由を 1 行で書く
-- **書かないこと**：評価の語（良い・悪い、足りない、〜しかできない など）、テストの十分さ、意図に合っているかの判断。判断はレビュワーが行う
+- **Do not use tables; write lists.** Depending on the terminal, tables can be hard to display and read
+- **Always quote the purpose of the change with its source.** Without the purpose, the intent cannot be read from behavior changes alone. If no source is found, write "No stated purpose"
+- **Write behavior changes as externally visible results.** Do not turn them into code descriptions. Follow them not only to the changed place but to where the result appears (another screen, an aggregate, another field of the API, etc.)
+- **Write changes to documents aimed at the Agent (AI) as behavior changes too.** Do not treat them as "docs-only changes, so behavior does not change"
+- **Write code locations as file, line, and method name inside the reviewed repository.** Do not point inside libraries or frameworks; just name them (e.g. Rails' built-in ActiveStorage)
+- **Tests that verify it**: write only when a relevant test exists. Do not evaluate whether the tests are sufficient
+- **Caution**: write only when someone reading the change (the reviewer, or a person or AI who later reads that code or document to work on it) might misread the meaning or scope of the change. Limit it to the following cases, where you can show grounds
+  - A description or code that contradicts what was changed remains elsewhere in the repository. Example: the "Approach" section of a design doc was changed to "timeout is 30 seconds", but the "Tests" section of the same doc still says "timeout is 10 seconds"
+  - Similar situations are handled differently in different places. Example: the same date is shown as "2026-01-05" in the list but "Jan 5" in the detail view
+  - Two conditions must hold at the same time, and looking at only one leads to a misreading. Example: "retry up to 3 times on failure" and "total retry wait is at most 10 seconds" are in the same document
+  - How to write it: state what differs from what and how, showing both locations. Do not say which one is correct or should be fixed (the reviewer decides)
+  - The scope is only this commit's or PR's changes and the repository at that point. Do not write whether it was fixed in a later commit or whether a misreading actually happened
+  - If none applies, omit this line
+- **Unchanged behavior**: write only behavior that, judging from the purpose or content of the change, people would likely assume is affected
+- **Spec alignment**: check whether the repository's spec documents have a corresponding description, and write it. If no spec document is found, write one line: "No spec document found". If the only changes are to the Agent (AI), write "Corresponding spec: not described (rules for agents are out of the spec's scope)"
+- **Could not determine**: write only things that have a concrete path to an externally visible result and cannot be verified (depends on settings outside the repository, a library version change, etc.). Do not write abstract possibilities without grounds
+- **Omitting**: omit empty sections and lines instead of writing "None" (Alternatives not taken, Tests that verify it, Caution, Unchanged behavior, Changes with no behavioral effect, Could not determine). **Never omit "Behavior changes".** Check all of App, Dev environment, and Agent (AI); only when you conclude none of them changes, write the reason in one line
+- **Do not write**: evaluative words (good/bad, insufficient, "can only…", etc.), test sufficiency, or judgments of whether it matches the intent. The reviewer makes the judgments
