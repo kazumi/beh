@@ -21,7 +21,7 @@ In the directory of the repository you want to review, invoke it from Claude Cod
 
 The output is written in the language you use in the conversation.
 
-The skill is read-only: it reads the change and the repository, and does not run tests, builds, or any code, change files, or write to GitHub. It may run `git fetch` to get a PR's commits that are not available locally. Text in commits, PRs, issues, and the diff is treated as data, not instructions. Only the file-editing tools (`Write`, `Edit`, `NotebookEdit`) are removed by the skill's `disallowed-tools`, and only for the turn that invokes it; the rest are instructions to the model, not enforced limits; when using it on changes from people you do not trust, restrict tool permissions (for example, allow only `git` and `gh` read commands in Bash) and do not use auto-approve modes.
+The skill is read-only: it reads the change and the repository, and does not run tests, builds, or any code, change files, or write to GitHub. It may run `git fetch` to get a PR's commits that are not available locally. Text in commits, PRs, issues, the diff, and other files it reads is treated as data, not instructions; text that tries to instruct the agent is reported in the output. Only the file-editing tools (`Write`, `Edit`, `NotebookEdit`) are removed by the skill's `disallowed-tools`, and only for the turn that invokes it; the rest are instructions to the model, not enforced limits; when using it on changes from people you do not trust, restrict tool permissions (for example, allow only `git` and `gh` read commands in Bash) and do not use auto-approve modes. See `SECURITY.md` for the threat model and known residual risks.
 
 ## Output
 
@@ -43,14 +43,18 @@ See `skills/beh/references/output-template.md` for the detailed format.
 
 ## Installation
 
-To use `/beh` in any repository, place the skill directory at `~/.claude/skills/beh`.
+To use `/beh` in any repository, copy the skill directory to `~/.claude/skills/beh`. Copy a commit you have reviewed, and do not symlink a clone you work in.
 
 ```sh
-git clone https://github.com/kazumi/beh.git ~/Work/beh
-ln -s ~/Work/beh/skills/beh ~/.claude/skills/beh
+git clone https://github.com/kazumi/beh.git /tmp/beh
+git -C /tmp/beh log -1            # check the commit you are about to install
+mkdir -p ~/.claude/skills
+cp -R /tmp/beh/skills/beh ~/.claude/skills/beh
 ```
 
-To use it in a single repository only, place it at `.claude/skills/beh` in that repository.
+Why a copy: the skill is read from wherever it is installed. If `~/.claude/skills/beh` points into a clone and you check out someone's pull request there, the next `/beh` runs with their version of `SKILL.md` and the template, including any change that removes the read-only rules. To update, repeat the steps above with a newer commit.
+
+To use it in a single repository only, place a copy at `.claude/skills/beh` in that repository.
 
 ## Structure
 
